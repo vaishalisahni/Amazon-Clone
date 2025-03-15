@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer components {
+  .link {
+    @apply cursor-pointer hover:underline;
+  }
+}
+
+/* Hide the default slick arrows */
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+/* Custom slider styles */
+.slick-slider {
+  @apply relative;
+}
+
+.slick-track {
+  @apply flex;
+}
+
+.slick-slide {
+  @apply flex-shrink-0;
+}
+
+.slick-slide > div {
+  @apply w-full;
+}
+
+/* Smooth sliding animation */
+.slick-slide {
+  @apply transition-transform duration-500;
+}
+
+body {
+  background-color: rgb(234, 237, 237);
+}
