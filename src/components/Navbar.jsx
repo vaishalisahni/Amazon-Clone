@@ -117,7 +117,7 @@ const Navbar = ({ onSearch }) => {
                             </div>
                             <input
                                 type="text"
-                                className="h-full p-2 flex-grow focus:outline-none text-black rounded-l-md md:rounded-none"
+                                className="h-full p-2 flex-grow focus:outline-none text-black rounded-l-md md:rounded-none bg-white"
                                 placeholder="Search Amazon.in"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
