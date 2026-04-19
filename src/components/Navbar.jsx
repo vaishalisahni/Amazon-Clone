@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
+import AmazonLogo from "../assets/logo-amazon.svg";
 
 const Navbar = ({ onSearch }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -54,7 +55,7 @@ const Navbar = ({ onSearch }) => {
                     >
                         <div className="flex items-center mr-2 md:mr-4">
                             <img
-                                src="https://pngimg.com/uploads/amazon/amazon_PNG11.png"
+                                src={AmazonLogo}
                                 alt="Amazon Logo"
                                 className="h-[25px] md:h-[35px] object-contain cursor-pointer mt-2"
                             />
@@ -88,8 +89,8 @@ const Navbar = ({ onSearch }) => {
                             </svg>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-200">Deliver to Asansol</p>
-                            <p className="text-sm font-bold">West Bengal 713333</p>
+                            <p className="text-xs text-gray-200">Deliver to</p>
+                            <p className="text-sm font-bold">India</p>
                         </div>
                     </div>
 
@@ -189,11 +190,28 @@ const Navbar = ({ onSearch }) => {
                         }`}
                     >
                         <div className="flex items-center hover:outline hover:outline-1 hover:outline-white p-2 cursor-pointer">
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_India.svg/255px-Flag_of_India.svg.png"
-                                alt="Flag"
-                                className="h-4 mr-1"
-                            />
+                            {/* Flag via SVG inline instead of Wikipedia URL */}
+                            <svg className="h-4 w-6 mr-1" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="900" height="600" fill="#FF9933"/>
+                                <rect y="200" width="900" height="200" fill="#fff"/>
+                                <rect y="400" width="900" height="200" fill="#138808"/>
+                                <circle cx="450" cy="300" r="70" fill="none" stroke="#000080" strokeWidth="7"/>
+                                <circle cx="450" cy="300" r="10" fill="#000080"/>
+                                {[...Array(24)].map((_, i) => {
+                                    const angle = (i * 15 * Math.PI) / 180;
+                                    return (
+                                        <line
+                                            key={i}
+                                            x1={450 + 10 * Math.cos(angle)}
+                                            y1={300 + 10 * Math.sin(angle)}
+                                            x2={450 + 70 * Math.cos(angle)}
+                                            y2={300 + 70 * Math.sin(angle)}
+                                            stroke="#000080"
+                                            strokeWidth="2"
+                                        />
+                                    );
+                                })}
+                            </svg>
                             <span className="font-bold text-sm">EN</span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -291,39 +309,17 @@ const Navbar = ({ onSearch }) => {
                             </svg>
                             <span>All</span>
                         </div>
-                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            MX Player
-                        </p>
-                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Sell
-                        </p>
-                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Gift Cards
-                        </p>
-                        <p className="hidden md:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Amazon Pay
-                        </p>
-                        <p className="hidden lg:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Buy Again
-                        </p>
-                        <p className="hidden lg:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Books
-                        </p>
-                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Health, Houshold and Personal Care
-                        </p>
-                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Coupons
-                        </p>
-                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Gift Ideas
-                        </p>
-                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Amazon Basics
-                        </p>
-                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">
-                            Home Improvement
-                        </p>
+                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">MX Player</p>
+                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Sell</p>
+                        <p className="cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Gift Cards</p>
+                        <p className="hidden md:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Amazon Pay</p>
+                        <p className="hidden lg:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Buy Again</p>
+                        <p className="hidden lg:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Books</p>
+                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Health, Household and Personal Care</p>
+                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Coupons</p>
+                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Gift Ideas</p>
+                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Amazon Basics</p>
+                        <p className="hidden xl:block cursor-pointer hover:outline hover:outline-1 hover:outline-white px-2 py-1">Home Improvement</p>
                     </div>
                 </div>
             </div>

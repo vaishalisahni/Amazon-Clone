@@ -1,18 +1,18 @@
 export const carouselData = [
-    { 
-      image: 'https://m.media-amazon.com/images/I/61lwJy4B8PL._SX3000_.jpg',
-      alt: 'Prime Day Deals' 
-    },
-    { 
-      image: 'https://m.media-amazon.com/images/I/71Ie3JXGfVL._SX3000_.jpg',
-      alt: 'Shop Deals in Fashion' 
-    },
-    { 
-      image: 'https://m.media-amazon.com/images/I/71U-Q+N7PXL._SX3000_.jpg',
-      alt: 'Electronics Sale' 
-    },
-    { 
-      image: 'https://m.media-amazon.com/images/I/61zAjw4bqPL._SX3000_.jpg',
-      alt: 'Home & Kitchen' 
-    }
-  ];
+  {
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=3000&auto=format&fit=crop',
+    alt: 'Shop Electronics Deals',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=3000&auto=format&fit=crop',
+    alt: 'Shop Deals in Fashion',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=3000&auto=format&fit=crop',
+    alt: 'Prime Deals',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=3000&auto=format&fit=crop',
+    alt: 'Home & Kitchen',
+  },
+];

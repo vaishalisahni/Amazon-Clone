@@ -1,6 +1,6 @@
 import React from "react";
 import "./Footer.css";
-import amazonLogo from "../assets/amazonLogo.png";
+import AmazonLogo from "../assets/logo-amazon.svg";
 
 function Footer() {
     return (
@@ -23,11 +23,11 @@ function Footer() {
                 </div>
 
                 <div className="footerCont1">
-                    <div className="contentFooterTitle">Lets Us Help You</div>
+                    <div className="contentFooterTitle">Let Us Help You</div>
                 </div>
             </div>
             <div className="amazonImg">
-                <img className="amazonImgFooter" src={amazonLogo} />
+                <img className="amazonImgFooter" src={AmazonLogo} alt="Amazon Logo" />
             </div>
         </div>
     );

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../utils/cartSlice';
 import { productData } from '../data/productData';
 import { cartItem } from '../data/cartItem';
+import ProductImage from './ProductImage';
 
 function ProductSection() {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ function ProductSection() {
   return (
     <div className="relative -mt-[200px] sm:-mt-[250px] md:-mt-[300px] lg:-mt-[350px] z-10">
       <div className="max-w-screen-2xl mx-auto">
+        {/* Category grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 mb-8">
           {productData.map((section, index) => (
             <div key={index} className="bg-white p-4 rounded-sm shadow-md hover:shadow-lg transition-shadow duration-200">
@@ -22,7 +24,7 @@ function ProductSection() {
                 {section.items.map((item, idx) => (
                   <div key={idx} className="cursor-pointer group">
                     <div className="overflow-hidden">
-                      <img
+                      <ProductImage
                         src={item.image}
                         alt={item.name}
                         className="w-full h-[120px] object-cover group-hover:scale-105 transition-transform duration-200"
@@ -39,16 +41,17 @@ function ProductSection() {
           ))}
         </div>
 
+        {/* Featured products */}
         <div className="px-4 mb-8">
           <h2 className="text-2xl font-bold mb-4">Featured Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {cartItem.map((item, index) => (
               <div key={index} className="bg-white p-4 rounded-sm shadow-md hover:shadow-lg transition-shadow duration-200">
-                <div className="overflow-hidden aspect-square mb-4">
-                  <img
+                <div className="overflow-hidden aspect-square mb-4 bg-gray-50 flex items-center justify-center">
+                  <ProductImage
                     src={item.img_link}
                     alt={item.product_name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="space-y-2">
@@ -65,15 +68,14 @@ function ProductSection() {
                     <span className="text-sm text-gray-500 line-through">{item.actual_price}</span>
                     <span className="text-sm text-red-700">{item.discount_percentage} off</span>
                   </div>
-                  <button 
-                    className="w-full mt-2 bg-[#FFD814] hover:bg-[#F7CA00] text-black py-1 px-4 rounded-full 
+                  <button
+                    className="w-full mt-2 bg-[#FFD814] hover:bg-[#F7CA00] text-black py-1 px-4 rounded-full
                                font-medium text-sm transition-colors duration-200 border border-[#FCD200]
                                active:bg-[#F2C200] active:border-[#F0B800]"
                     onClick={() => handleAddToCart(item)}
                   >
                     Add to Cart
                   </button>
-                 
                 </div>
               </div>
             ))}
