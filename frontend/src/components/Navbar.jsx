@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from './Sidebar';
-import AmazonLogo from '../assets/logo-amazon.svg';
+import AmazonLogo from '../assets/logo.svg';
 import toast from 'react-hot-toast';
 
 const NAV_CATEGORIES = [
