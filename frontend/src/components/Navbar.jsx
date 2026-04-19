@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from './Sidebar';
-import AmazonLogo from '../assets/Logo.svg';
+import AmazonLogo from '../assets/logo.svg';
 import toast from 'react-hot-toast';
 
 const NAV_CATEGORIES = [
@@ -84,7 +84,7 @@ const Navbar = ({ onSearch }) => {
 
           {/* Logo */}
           <Link to="/" className={`flex-shrink-0 border border-transparent hover:border-white rounded px-1 ${isSearchVisible ? 'hidden md:flex' : 'flex'}`}>
-            <img src={AmazonLogo} alt="Amazon" className="h-[35px] md:h-[45px] object-contain cursor-pointer mt-2" />
+            <img src={AmazonLogo} alt="Amazon" className="h-[25px] md:h-[35px] object-contain cursor-pointer mt-2" />
           </Link>
 
           {/* Deliver to */}
