@@ -24,13 +24,23 @@ import NotFound from './components/NotFound';
 import './App.css';
 
 function App() {
+  // searchQuery is still kept for Navbar's onSearch callback
+  // but SearchPage now reads from URL ?q= param directly
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <AuthProvider>
       <Router>
         <div className="App flex flex-col min-h-screen">
-          <Toaster position="top-center" toastOptions={{ duration: 2500 }} />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 2500,
+              style: { borderRadius: '8px', fontSize: '14px' },
+              success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+            }}
+          />
           <Navbar onSearch={setSearchQuery} />
           <div className="flex-grow">
             <Routes>
@@ -43,7 +53,8 @@ function App() {
                   </>
                 }
               />
-              <Route path="/search" element={<SearchPage searchQuery={searchQuery} />} />
+              {/* SearchPage reads ?q= from URL itself */}
+              <Route path="/search" element={<SearchPage />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/sign-in" element={<SignIn />} />
 

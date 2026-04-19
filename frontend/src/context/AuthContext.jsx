@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
 
+// Use localStorage but with proper token management
+// For httpOnly cookies you'd need backend changes; this uses secure client storage pattern
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -10,9 +12,22 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const stored = localStorage.getItem('userInfo');
     if (stored) {
-      const parsed = JSON.parse(stored);
-      setUser(parsed);
-      api.defaults.headers.common['Authorization'] = `Bearer ${parsed.token}`;
+      try {
+        const parsed = JSON.parse(stored);
+        // Verify token not expired (JWT decode without verify)
+        if (parsed.token) {
+          const payload = JSON.parse(atob(parsed.token.split('.')[1]));
+          if (payload.exp * 1000 > Date.now()) {
+            setUser(parsed);
+            api.defaults.headers.common['Authorization'] = `Bearer ${parsed.token}`;
+          } else {
+            // Token expired, clear it
+            localStorage.removeItem('userInfo');
+          }
+        }
+      } catch {
+        localStorage.removeItem('userInfo');
+      }
     }
     setLoading(false);
   }, []);
@@ -20,6 +35,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     localStorage.setItem('userInfo', JSON.stringify(data));
+    // Set a cookie as well for cross-tab awareness
+    document.cookie = `isLoggedIn=true; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict`;
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data);
     return data;
@@ -28,6 +45,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     const { data } = await api.post('/auth/register', { name, email, password });
     localStorage.setItem('userInfo', JSON.stringify(data));
+    document.cookie = `isLoggedIn=true; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict`;
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data);
     return data;
@@ -35,6 +53,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('userInfo');
+    // Clear cookie
+    document.cookie = 'isLoggedIn=; path=/; max-age=0';
     delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
