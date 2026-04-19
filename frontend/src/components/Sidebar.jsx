@@ -122,7 +122,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   <li key={idx}>
                     <button
                       onClick={() => handleCategoryClick(item.search)}
-                      className="w-full flex justify-between items-center px-4 py-2.5 text-sm hover:bg-gray-100 text-left transition-colors"
+                      className="w-full flex justify-between items-center px-4 py-2.5 text-sm text-black hover:bg-gray-100 text-left transition-colors"
                     >
                       <span>{item.title}</span>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
