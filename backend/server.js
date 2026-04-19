@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser'); // ADD THIS
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
@@ -9,12 +10,15 @@ connectDB();
 
 const app = express();
 
+// Allow credentials (cookies) from the frontend origins
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:3000', process.env.CLIENT_URL],
-  credentials: true,
+  credentials: true, // required for cookies to be sent cross-origin
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // parse cookies — must be before routes
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -28,4 +32,6 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+);
