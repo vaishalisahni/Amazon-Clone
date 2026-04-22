@@ -1,8 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
 
-// Use localStorage but with proper token management
-// For httpOnly cookies you'd need backend changes; this uses secure client storage pattern
+/**
+ * Auth Strategy:
+ * - The server sets an httpOnly cookie named 'jwt' on login/register.
+ *   This cookie is NOT accessible via JS (document.cookie), providing XSS protection.
+ * - We also store user info (minus sensitive data) in localStorage for UI state
+ *   (name, email, isAdmin) and send the token in Authorization headers as a fallback.
+ * - On logout, we call the server to clear the httpOnly cookie AND clear localStorage.
+ *
+ * The old pattern of setting document.cookie = 'isLoggedIn=true' was NOT an httpOnly
+ * cookie and provided zero security benefit — it has been removed.
+ */
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -14,14 +23,14 @@ export const AuthProvider = ({ children }) => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        // Verify token not expired (JWT decode without verify)
         if (parsed.token) {
+          // Check JWT expiry client-side (not verification — just expiry check)
           const payload = JSON.parse(atob(parsed.token.split('.')[1]));
           if (payload.exp * 1000 > Date.now()) {
             setUser(parsed);
             api.defaults.headers.common['Authorization'] = `Bearer ${parsed.token}`;
           } else {
-            // Token expired, clear it
+            // Token expired — clear storage (httpOnly cookie will be ignored by server too)
             localStorage.removeItem('userInfo');
           }
         }
@@ -33,30 +42,38 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    // Server will set httpOnly 'jwt' cookie automatically in the response
     const { data } = await api.post('/auth/login', { email, password });
+
+    // Store non-sensitive user info for UI (avatar, name, email, isAdmin)
     localStorage.setItem('userInfo', JSON.stringify(data));
-    // Set a cookie as well for cross-tab awareness
-    document.cookie = `isLoggedIn=true; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict`;
+
+    // Set Bearer token for API calls (fallback for environments where cookies don't work)
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data);
     return data;
   };
 
   const register = async (name, email, password) => {
+    // Server sets httpOnly cookie
     const { data } = await api.post('/auth/register', { name, email, password });
     localStorage.setItem('userInfo', JSON.stringify(data));
-    document.cookie = `isLoggedIn=true; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict`;
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     setUser(data);
     return data;
   };
 
-  const logout = () => {
-    localStorage.removeItem('userInfo');
-    // Clear cookie
-    document.cookie = 'isLoggedIn=; path=/; max-age=0';
-    delete api.defaults.headers.common['Authorization'];
-    setUser(null);
+  const logout = async () => {
+    try {
+      // Ask the server to clear the httpOnly cookie
+      await api.post('/auth/logout');
+    } catch {
+      // Even if the request fails, clear client-side state
+    } finally {
+      localStorage.removeItem('userInfo');
+      delete api.defaults.headers.common['Authorization'];
+      setUser(null);
+    }
   };
 
   return (

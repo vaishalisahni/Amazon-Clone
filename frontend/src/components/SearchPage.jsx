@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { addToCart } from "../utils/cartSlice";
@@ -39,8 +39,7 @@ function SearchPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // Read query from URL param
-  const urlQuery = searchParams.get('q') || '';
+  const urlQuery = searchParams.get("q") || "";
 
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -49,7 +48,7 @@ function SearchPage() {
   const [sortBy, setSortBy] = useState("relevance");
 
   const parsePriceString = (priceStr) =>
-    parseFloat(priceStr.replace("₹", "").replace(/,/g, ""));
+    parseFloat((priceStr || "0").replace("₹", "").replace(/,/g, ""));
 
   const isPriceInRange = (price, range) => {
     const n = parsePriceString(price);
@@ -61,13 +60,20 @@ function SearchPage() {
   };
 
   const filteredProducts = useMemo(() => {
-    const query = urlQuery.toLowerCase();
+    const query = urlQuery.toLowerCase().trim();
     let results = cartItem.filter((item) => {
-      const matchesSearch =
-        !query ||
-        item.product_name.toLowerCase().includes(query) ||
-        item.category?.toLowerCase().includes(query) ||
-        item.about_product?.toLowerCase().includes(query);
+      // Search across name, category, about_product — this makes "best sellers",
+      // "deals", "new releases", "gift cards", "amazon pay" all work
+      const searchableText = [
+        item.product_name,
+        item.category,
+        item.about_product,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch = !query || searchableText.includes(query);
+
       const matchesCategory =
         selectedCategories.length === 0 ||
         selectedCategories.some((c) =>
@@ -76,14 +82,24 @@ function SearchPage() {
       const matchesPrice =
         selectedPriceRanges.length === 0 ||
         selectedPriceRanges.some((r) => isPriceInRange(item.discounted_price, r));
+
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
-    // Sort
-    if (sortBy === "price_asc") results = [...results].sort((a, b) => parsePriceString(a.discounted_price) - parsePriceString(b.discounted_price));
-    else if (sortBy === "price_desc") results = [...results].sort((a, b) => parsePriceString(b.discounted_price) - parsePriceString(a.discounted_price));
-    else if (sortBy === "rating") results = [...results].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    else if (sortBy === "discount") results = [...results].sort((a, b) => parseFloat(b.discount_percentage) - parseFloat(a.discount_percentage));
+    if (sortBy === "price_asc")
+      results = [...results].sort(
+        (a, b) => parsePriceString(a.discounted_price) - parsePriceString(b.discounted_price)
+      );
+    else if (sortBy === "price_desc")
+      results = [...results].sort(
+        (a, b) => parsePriceString(b.discounted_price) - parsePriceString(a.discounted_price)
+      );
+    else if (sortBy === "rating")
+      results = [...results].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else if (sortBy === "discount")
+      results = [...results].sort(
+        (a, b) => parseFloat(b.discount_percentage) - parseFloat(a.discount_percentage)
+      );
 
     return results;
   }, [urlQuery, selectedCategories, selectedPriceRanges, sortBy]);
@@ -91,14 +107,16 @@ function SearchPage() {
   const handleAddToCart = (e, item) => {
     e.stopPropagation();
     dispatch(addToCart(item));
-    toast.success('Added to cart!');
+    toast.success("Added to cart!");
   };
 
   const handleWishlist = (e, item) => {
     e.stopPropagation();
     const isWishlisted = wishlistItems.some((i) => i.product_id === item.product_id);
     dispatch(toggleWishlist(item));
-    toast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist', { icon: isWishlisted ? '💔' : '❤️' });
+    toast(isWishlisted ? "Removed from wishlist" : "Added to wishlist", {
+      icon: isWishlisted ? "💔" : "❤️",
+    });
   };
 
   const filterSections = [
@@ -164,7 +182,9 @@ function SearchPage() {
                 selectedOptions={section.selected}
                 onOptionChange={(option) => {
                   section.onChange((prev) =>
-                    prev.includes(option) ? prev.filter((i) => i !== option) : [...prev, option]
+                    prev.includes(option)
+                      ? prev.filter((i) => i !== option)
+                      : [...prev, option]
                   );
                 }}
               />
@@ -178,11 +198,15 @@ function SearchPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
             <h1 className="text-xl font-medium">
               {urlQuery ? (
-                <>Results for <span className="font-bold">"{urlQuery}"</span></>
+                <>
+                  Results for <span className="font-bold">"{urlQuery}"</span>
+                </>
               ) : (
-                'All Products'
+                "All Products"
               )}
-              <span className="text-gray-500 text-sm font-normal ml-2">({filteredProducts.length} results)</span>
+              <span className="text-gray-500 text-sm font-normal ml-2">
+                ({filteredProducts.length} results)
+              </span>
             </h1>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 whitespace-nowrap">Sort by:</span>
@@ -207,10 +231,16 @@ function SearchPage() {
                   className="bg-white p-4 rounded-lg shadow border border-gray-200 flex flex-col sm:flex-row hover:shadow-md transition-shadow"
                 >
                   <div
-                    className="w-full sm:w-48 h-48 flex-shrink-0 mb-4 sm:mb-0 bg-gray-50 flex items-center justify-center cursor-pointer rounded"
+                    className="w-full sm:w-48 h-48 flex-shrink-0 mb-4 sm:mb-0 rounded overflow-hidden cursor-pointer"
                     onClick={() => navigate(`/product/${item.product_id}`)}
                   >
-                    <ProductImage src={item.img_link} alt={item.product_name} className="w-full h-full object-contain" />
+                    {/* Pass product={item} so SVG icon is category-aware */}
+                    <ProductImage
+                      src={item.img_link}
+                      alt={item.product_name}
+                      className="w-full h-full object-contain"
+                      product={item}
+                    />
                   </div>
                   <div className="sm:ml-6 flex-grow">
                     <h3
@@ -228,12 +258,12 @@ function SearchPage() {
                     </div>
                     {item.about_product && (
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                        {item.about_product.split('|')[0]}
+                        {item.about_product.split("|")[0]}
                       </p>
                     )}
                     <div className="mt-2 flex items-baseline gap-2 flex-wrap">
                       <span className="text-2xl font-medium">{item.discounted_price}</span>
-                      {item.actual_price && (
+                      {item.actual_price && item.discount_percentage !== "0%" && (
                         <>
                           <span className="text-sm text-gray-500 line-through">{item.actual_price}</span>
                           <span className="text-sm text-red-600 font-medium">({item.discount_percentage} off)</span>
@@ -252,10 +282,10 @@ function SearchPage() {
                         onClick={(e) => handleWishlist(e, item)}
                         className="flex items-center gap-1 text-sm text-[#007185] hover:text-[#c45500] transition-colors"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill={isWishlisted ? '#e74c3c' : 'none'} viewBox="0 0 24 24" strokeWidth={1.5} stroke={isWishlisted ? '#e74c3c' : 'currentColor'} className="w-4 h-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill={isWishlisted ? "#e74c3c" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke={isWishlisted ? "#e74c3c" : "currentColor"} className="w-4 h-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                         </svg>
-                        {isWishlisted ? 'Wishlisted' : 'Wishlist'}
+                        {isWishlisted ? "Wishlisted" : "Wishlist"}
                       </button>
                     </div>
                   </div>
@@ -270,9 +300,7 @@ function SearchPage() {
                 </svg>
                 <h2 className="text-xl font-bold mb-2">No results found</h2>
                 <p className="text-gray-500 text-sm mb-4">
-                  {urlQuery
-                    ? `We couldn't find any matches for "${urlQuery}"`
-                    : 'No products match your filters'}
+                  {urlQuery ? `We couldn't find any matches for "${urlQuery}"` : "No products match your filters"}
                 </p>
                 {hasActiveFilters && (
                   <button
@@ -282,7 +310,7 @@ function SearchPage() {
                     Clear filters
                   </button>
                 )}
-                <button onClick={() => navigate('/')} className="text-[#007185] hover:underline text-sm">
+                <button onClick={() => navigate("/")} className="text-[#007185] hover:underline text-sm">
                   Go back home
                 </button>
               </div>
